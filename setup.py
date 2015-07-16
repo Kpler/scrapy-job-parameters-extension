@@ -16,7 +16,7 @@ requires = [
 
 setup(
     name='scrapyjobparameter',
-    version=history.__version__,
+    version=scrapyjobparameters.__version__,
     description='Scrapy extension to make job_id and project_id available as spider fields.',
     long_description=open('README.md').read(),
     author='Jean Maynier',
