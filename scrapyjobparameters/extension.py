@@ -16,6 +16,7 @@ class JobParametersExtension(object):
         return ext
 
     def spider_opened(self, spider):
-        logger.info('TEST')
         spider.job_id = os.environ.get('SCRAPY_JOB')
         spider.project_id = os.environ.get('SCRAPY_PROJECT_ID')
+        logger.info('Project id : {}'.format(spider.project_id))
+        logger.info('Job id : {}'.format(spider.job_id))
