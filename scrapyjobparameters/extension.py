@@ -1,5 +1,5 @@
 import logging, os
-
+from scrapy import signals
 logger = logging.getLogger(__name__)
 
 class JobParametersExtension(object):
@@ -9,9 +9,13 @@ class JobParametersExtension(object):
         # instantiate the extension object
         ext = cls()
 
-        sp = crawler.spider
-        sp.job_id = os.environ.get('SCRAPY_JOB')
-        sp.project_id = os.environ.get('SCRAPY_PROJECT_ID')
+        #connect the extension object to signals
+        crawler.signals.connect(ext.spider_opened, signal=signals.spider_opened)
 
         # return the extension object
         return ext
+
+    def spider_opened(self, spider):
+        logger.info('TEST')
+        spider.job_id = os.environ.get('SCRAPY_JOB')
+        spider.project_id = os.environ.get('SCRAPY_PROJECT_ID')

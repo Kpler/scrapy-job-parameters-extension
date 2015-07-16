@@ -19,7 +19,7 @@ class TestLogentriesExtension(unittest.TestCase):
 
     def test_parameters(self):
         crawler = Crawler(SimpleSpiderTest, settings)
-        crawler.crawl()
         extension = JobParametersExtension.from_crawler(crawler)
+        crawler.crawl()
         self.assertEqual(crawler.spider.job_id, 'id1')
         self.assertEqual(crawler.spider.project_id, 'id2')
