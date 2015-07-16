@@ -16,7 +16,21 @@ class JobParametersExtension(object):
         return ext
 
     def spider_opened(self, spider):
-        spider.job_id = os.environ.get('SCRAPY_JOB')
-        spider.project_id = os.environ.get('SCRAPY_PROJECT_ID')
+        job_name = os.environ.get('SCRAPY_JOB')
+
+        #for ScrapingHub, job id is 'PROJECT_ID/SPIDER_ID/JOB_ID'
+        try:
+            (project_id, spider_id, job_id) = job_name.split('/')
+        except ValueError:
+            # if not enpught value to unpack this is not a SH id, so keep the all string
+            job_id = job_name
+            spider_id = None
+            project_id = os.environ.get('SCRAPY_PROJECT_ID')
+
+        spider.project_id = project_id
+        spider.spider_id = spider_id
+        spider.job_id = job_id
+
         logger.info('Project id : {}'.format(spider.project_id))
+        logger.info('Spider id : {}'.format(spider.spider_id))
         logger.info('Job id : {}'.format(spider.job_id))
