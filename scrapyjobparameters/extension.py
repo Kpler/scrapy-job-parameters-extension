@@ -42,8 +42,11 @@ class JobParametersExtension(object):
             spider_id = None
             project_id = os.environ.get('SCRAPY_PROJECT_ID')
 
-        os.environ['SCRAPY_PROJECT_ID'] = project_id
-        os.environ['SCRAPY_JOB_ID'] = job_id
-        os.environ['SCRAPY_SPIDER_ID'] = spider_id
+        if project_id is not None:
+            os.environ['SCRAPY_PROJECT_ID'] = project_id
+        if job_id is not None:
+            os.environ['SCRAPY_JOB_ID'] = job_id
+        if spider_id is not None:
+            os.environ['SCRAPY_SPIDER_ID'] = spider_id
 
         return project_id, spider_id, job_id
