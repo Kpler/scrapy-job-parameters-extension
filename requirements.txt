@@ -1,3 +1,5 @@
 # Project
 scrapy
 
+# Testing
+nose
