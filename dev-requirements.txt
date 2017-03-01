@@ -1,0 +1,4 @@
+ipdb
+nose
+nose-cov
+-r requirements.txt
