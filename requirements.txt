@@ -1,5 +1,2 @@
 # Project
 scrapy
-
-# Testing
-nose
