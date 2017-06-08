@@ -1,13 +1,14 @@
-scrapy-history-middleware
-=========================
+# Scrapy Metas Extension
 
-Scrapy extension to make job_id and project_id available as spider fields.
+[![CircleCI](https://circleci.com/gh/Kpler/scrapy-job-parameters-extension.svg?style=svg)](https://circleci.com/gh/Kpler/scrapy-job-parameters-extension)
 
-## Requirements
+> Scrapy extension to make env meta information available as spider fields.
 
+Current implementation exposes to the spider a `meta` object with the
+following attributes:
 
-Testing:
-
-  * `nose`
-  * `nose-cov`
-  * `coverage`
+- `project_id` - as defined by Scrapinghub
+- `spider_id` -
+- `job_id` -
+- `job_name` - raw job id from Scrapinghub or uuid v4
+- `job_time` - excecution time
