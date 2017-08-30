@@ -1,4 +1,7 @@
-ipdb
-nose
-nose-cov
 -r requirements.txt
+
+ipdb
+nose-timer==0.7.0
+nose==1.3.7
+nose-cov==1.6
+isort==4.2.15
