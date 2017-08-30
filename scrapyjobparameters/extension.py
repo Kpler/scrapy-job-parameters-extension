@@ -10,6 +10,11 @@ from scrapy import signals
 logger = logging.getLogger(__name__)
 
 
+def _job_name_fallback():
+    """SHUB-like unique job name generation"""
+    return '0/0/{}'.format(str(uuid4()))
+
+
 class SpiderMetas(object):
     """Databag of interesting metas information about the spider env.
 
@@ -23,11 +28,9 @@ class SpiderMetas(object):
 
     def __init__(self):
         self.project_id, self.spider_id, self.job_id = None, None, None
-        self.job_time = dt.datetime.utcnow()
 
-    @property
-    def job_name(self):
-        return os.environ.get('SCRAPY_JOB', str(uuid4()))
+        self.job_time = dt.datetime.utcnow()
+        self.job_name = os.getenv('SCRAPY_JOB', _job_name_fallback())
 
     @staticmethod
     def _fallback(job_name):
@@ -42,7 +45,7 @@ class SpiderMetas(object):
 
     def _parse_job_name(self, job):
         # NOTE our other extension (datadog) uses other settings to find
-        # project-id and spider_id values. While it is certainly not a good
+        # project_id and spider_id values. While it is certainly not a good
         # idea to link their code, I guess we should be consistent and use the
         # same most effective solution.
 
@@ -58,6 +61,16 @@ class SpiderMetas(object):
     def populate(self):
         self.project_id, self.spider_id, self.job_id = self._parse_job_name(self.job_name)
 
+    def to_dict(self):
+        return {
+            'project_id': self.project_id,
+            'spider_id': self.spider_id,
+            'job_id': self.job_id,
+
+            'job_time': self.job_time,
+            'job_name': self.job_name,
+        }
+
     def __repr__(self):
         return 'Metas(project={}, spider={}, job={}, time={})'.format(self.project_id,
                                                                       self.spider_id,
@@ -66,12 +79,13 @@ class SpiderMetas(object):
 
 
 # NOTE use enable parameter
-class JobMetasExtension(object):
+class JobParametersExtension(object):
 
     def __init__(self):
+        # namespacing those parameters under a `metas` attribute would be great
+        # nut scrapy `feedexport` uses `getattr(spider, key)` to bind those
+        # information. So we can't nest objects.
         self.metas = SpiderMetas()
-
-        logger.info('Job {}'.format(self.metas))
 
     @classmethod
     def from_crawler(cls, crawler):
@@ -85,4 +99,7 @@ class JobMetasExtension(object):
 
     def spider_opened(self, spider):
         """Finally expose to the spider the settings."""
-        spider.metas = self.metas
+        self.metas.populate()
+        for k, v in self.metas.to_dict().items():
+            logger.debug('binding meta attribute to spider: {}={}'.format(k, v))
+            setattr(spider, k, v)

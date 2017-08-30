@@ -32,14 +32,19 @@ class TestSpiderMetas(unittest.TestCase):
 
     def test_job_name_default(self):
         os.environ['SCRAPY_JOB'] = self.fake_job_name
-        self.assertEqual(self.metas.job_name, self.fake_job_name)
+        metas = ext.SpiderMetas()
+        self.assertEqual(metas.job_name, self.fake_job_name)
         os.environ.pop('SCRAPY_JOB')
 
     def test_job_name_fallback(self):
         # make sure it is not set (should be useless)
         # os.environ.pop('SCRAPY_JOB', None)
-        self.assertNotEqual(self.metas.job_name, self.fake_job_name)
-        self.assertTrue(UUID(self.metas.job_name, version=4))
+        metas = ext.SpiderMetas()
+        self.assertNotEqual(metas.job_name, self.fake_job_name)
+
+        partials = metas.job_name.split('/')
+        self.assertEqual(len(partials), 3)
+        self.assertTrue(UUID(partials[-1], version=4))
 
     def test_fallback_without_project_id(self):
         project, spider, job = ext.SpiderMetas._fallback(self.fake_job_name)
